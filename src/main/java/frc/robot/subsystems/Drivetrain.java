@@ -16,8 +16,8 @@ public class Drivetrain {
     //What is location in comparasion to front of bot 
     //Example x and y's seem to be swapped?
     private final Translation2d frontLeftLocation = new Translation2d(0.15875, 0.15875);
-    private final Translation2d frontrightLocation = new Translation2d(-0.15875, 0.15875);
-    private final Translation2d backLeftLocation = new Translation2d(0.15875, -0.15875);
+    private final Translation2d frontrightLocation = new Translation2d(0.15875, -0.15875);
+    private final Translation2d backLeftLocation = new Translation2d(-0.15875, 0.15875);
     private final Translation2d backRightLocation = new Translation2d(-0.15875, -0.15875);
 
     private SwerveModule frontLeftModule;
@@ -70,12 +70,16 @@ public class Drivetrain {
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
+        xSpeed = 0;
+        ySpeed = 0;
+        rot = 0;
         var swerveModuleStates = 
             kinematics.toSwerveModuleStates(
                 new ChassisSpeeds(xSpeed, ySpeed, rot)
             );
 
-        System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+
+        System.out.println("Swerve before: " + swerveModuleStates[0].speedMetersPerSecond);
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 3.0);
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
@@ -83,6 +87,6 @@ public class Drivetrain {
         backLeftModule.setDesiredState(swerveModuleStates[2]);
         backRightModule.setDesiredState(swerveModuleStates[3]);
 
-        System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+        System.out.println("Swerve after: " +swerveModuleStates[0].speedMetersPerSecond);
     }
 }
