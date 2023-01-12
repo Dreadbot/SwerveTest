@@ -228,6 +228,7 @@ public class DreadbotMotor{
      * Stops the motor from moving, can be re-enabled by calling set()
      */
     public void stopMotor(){
+        System.out.print("Called");
         if(isDisabled()) return;
         try{
             motor.stopMotor();

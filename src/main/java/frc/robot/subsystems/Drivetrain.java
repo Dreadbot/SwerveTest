@@ -22,7 +22,7 @@ public class Drivetrain {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private AHRS gyro = new AHRS(SerialPort.Port.kUSB);
+    //private AHRS gyro = new AHRS(SerialPort.Port.kUSB);
 
     private SwerveDriveKinematics kinematics;
 
@@ -46,18 +46,18 @@ public class Drivetrain {
         frontRightModule = new SwerveModule(frontRightDriveMotor, frontRightTurningMotor);
         backLeftModule = new SwerveModule(backLeftDriveMotor, backLeftTurningMotor);
         backRightModule = new SwerveModule(backRightDriveMotor, backRightTurningMotor);
-        gyro.reset();
+        //gyro.reset();
 
-        odometry  = 
-            new SwerveDriveOdometry(
-                kinematics,
-                gyro.getRotation2d(),
-                new SwerveModulePosition[] {
-                    frontLeftModule.getPosition(),
-                    frontRightModule.getPosition(),
-                    backLeftModule.getPosition(),
-                    backRightModule.getPosition()
-                });
+        // odometry  = 
+        //     new SwerveDriveOdometry(
+        //         kinematics,
+        //         gyro.getRotation2d(),
+        //         new SwerveModulePosition[] {
+        //             frontLeftModule.getPosition(),
+        //             frontRightModule.getPosition(),
+        //             backLeftModule.getPosition(),
+        //             backRightModule.getPosition()
+        //         });
 
         kinematics = 
         new SwerveDriveKinematics(
@@ -79,7 +79,7 @@ public class Drivetrain {
             );
 
 
-        System.out.println("Swerve before: " + swerveModuleStates[0].speedMetersPerSecond);
+        //System.out.println("Swerve before: " + swerveModuleStates[0].speedMetersPerSecond);
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 3.0);
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
@@ -87,6 +87,6 @@ public class Drivetrain {
         backLeftModule.setDesiredState(swerveModuleStates[2]);
         backRightModule.setDesiredState(swerveModuleStates[3]);
 
-        System.out.println("Swerve after: " +swerveModuleStates[0].speedMetersPerSecond);
+        //System.out.println("Swerve after: " +swerveModuleStates[0].speedMetersPerSecond);
     }
 }
