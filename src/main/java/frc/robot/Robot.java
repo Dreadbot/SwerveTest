@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -38,7 +39,7 @@ public class Robot extends TimedRobot {
   private DreadbotMotor backRightTurningMotor = new DreadbotMotor(new CANSparkMax(6, MotorType.kBrushless), "BackRightTurning");
 
   DreadbotController controller = new DreadbotController(0);
-  
+  CANCoder testEncoder = new CANCoder(9);
   Drivetrain drive = new Drivetrain(
     frontLeftDriveMotor,
     frontLeftTurningMotor,
@@ -112,7 +113,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.drive(controller.getXAxis(), controller.getYAxis(), controller.getZAxis(), true);
+    //drive.drive(controller.getXAxis(), controller.getYAxis(), controller.getZAxis(), true);
+    System.out.println(testEncoder.getAbsolutePosition());
   }
 
   @Override
