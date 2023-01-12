@@ -3,10 +3,7 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.util.misc.DreadbotMotor;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -30,6 +27,9 @@ public class Drivetrain {
     private SwerveDriveKinematics kinematics;
 
     private SwerveDriveOdometry odometry;
+
+    // Added For testing
+    protected SwerveModuleState[] swerveModuleStates;
 
     public Drivetrain(
         DreadbotMotor frontLeftDriveMotor,
@@ -70,10 +70,10 @@ public class Drivetrain {
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
-        xSpeed = 0;
-        ySpeed = 0;
-        rot = 0;
-        var swerveModuleStates = 
+//        xSpeed = 0;
+//        ySpeed = 0;
+//        rot = 0;
+        swerveModuleStates =
             kinematics.toSwerveModuleStates(
                 new ChassisSpeeds(xSpeed, ySpeed, rot)
             );

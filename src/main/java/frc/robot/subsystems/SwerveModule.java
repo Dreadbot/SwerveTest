@@ -11,7 +11,7 @@ import frc.robot.util.misc.DreadbotMotor;
 
 public class SwerveModule {
     //Find radius
-    private double kWheelRadius = .0508;
+    private double kWheelRadius = .0508; // in Meters, .0508 = 2 inches
     private int kEncoderResolution = 4096;
 
     private DreadbotMotor driveMotor;
@@ -32,20 +32,27 @@ public class SwerveModule {
             new TrapezoidProfile.Constraints(
                 Math.PI, 2* Math.PI));
 
-    public SwerveModule(
-        DreadbotMotor driveMotor,
-        DreadbotMotor turningMotor) {
-            this.driveMotor = driveMotor;
-            this.turningMotor = turningMotor;
+    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turningMotor) {
+        this.driveMotor = driveMotor;
+        this.turningMotor = turningMotor;
 
-            driveMotor.setPositionConversionFactor(2 * Math.PI * kWheelRadius / kEncoderResolution);
+        // Wheel Circumference: 2 * PI * radius (we do all our measurements in Meters)
+        // Our motor encoders return position value in rotations,
+        // So, Divide the circumference by the gear ratio.
+        // In this case, we want to know the number of rotations of the motor to get 1 full rotation of the tires
+        //      Since the gear on the motor is smaller than the gear on the wheel, we want a number less than 1
+        //      so it should be something like 15/50 (50 teeth on wheel gear, 15 teeth on motor gear)
+        //*** Make sure at least one of the values is a doulbe (15.0) or it will do integer math and return 0;  ***
+        double wheelCircumference = 2 * Math.PI * kWheelRadius;
+        double driveGearRatio = 14.0/50.0; // from https://www.andymark.com/products/mk4i-swerve-modules?via=Z2lkOi8vYW5keW1hcmsvV29ya2FyZWE6Ok5hdmlnYXRpb246OlNlYXJjaFJlc3VsdHMvJTdCJTIycSUyMiUzQSUyMnN3ZXJ2ZSUyMiU3RA
+        double turnGearRatio = 7.0/150.0;
+        driveMotor.setPositionConversionFactor(wheelCircumference * driveGearRatio);
+        turningMotor.setPositionConversionFactor(2 * Math.PI * turnGearRatio);
 
-            turningMotor.setPositionConversionFactor(2 * Math.PI/kEncoderResolution);
-
-            //Find function to make turning PID input continuous and limited to pi to -pi
-            turningMotor.getPIDController().setPositionPIDWrappingMinInput(-Math.PI);
-            turningMotor.getPIDController().setPositionPIDWrappingMaxInput(Math.PI);
-            turningMotor.getPIDController().setPositionPIDWrappingEnabled(true);
+        //Find function to make turning PID input continuous and limited to pi to -pi
+        turningMotor.getPIDController().setPositionPIDWrappingMinInput(-Math.PI);
+        turningMotor.getPIDController().setPositionPIDWrappingMaxInput(Math.PI);
+        turningMotor.getPIDController().setPositionPIDWrappingEnabled(true);
     }
 
     public SwerveModulePosition getPosition() {
