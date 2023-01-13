@@ -47,7 +47,6 @@ public class Drivetrain {
         DreadbotMotor backRightTurningMotor,
         CANCoder backRightTurningEncoder
         ){
-
         frontLeftModule = new SwerveModule(frontLeftDriveMotor, frontLeftTurningMotor, frontLeftTurningEncoder);
         frontRightModule = new SwerveModule(frontRightDriveMotor, frontRightTurningMotor, frontRightTurningEncoder);
         backLeftModule = new SwerveModule(backLeftDriveMotor, backLeftTurningMotor, backLeftTurningEncoder);
