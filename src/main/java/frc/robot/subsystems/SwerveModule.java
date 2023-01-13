@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
@@ -19,6 +20,7 @@ public class SwerveModule {
 
     private DreadbotMotor driveMotor;
     private DreadbotMotor turningMotor;
+    private CANCoder turningEncoder;
 
     //Configure below variables for our bot
     //private final PIDController drivePIDController = new PIDController(1, 0, 0);
@@ -35,13 +37,13 @@ public class SwerveModule {
     //         new TrapezoidProfile.Constraints(
     //             Math.PI, 2* Math.PI));
 
-    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turningMotor) {
+    public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turningMotor, CANCoder turningEncoder) {
         this.driveMotor = driveMotor;
         this.turningMotor = turningMotor;
-
-        driveMotor.setP(.0001);
-        turningMotor.setP(.0001);
-
+        this.turningEncoder = turningEncoder;
+        driveMotor.setP(.000005);
+        turningMotor.setP(.015);
+        turningMotor.getPIDController().setOutputRange(-1, 1);
         driveMotor.setIdleMode(IdleMode.kCoast);
         turningMotor.setIdleMode(IdleMode.kCoast);
 
@@ -55,13 +57,13 @@ public class SwerveModule {
         double wheelCircumference = 2 * Math.PI * kWheelRadius;
         double driveGearRatio = 14.0/50.0; // from https://www.andymark.com/products/mk4i-swerve-modules?via=Z2lkOi8vYW5keW1hcmsvV29ya2FyZWE6Ok5hdmlnYXRpb246OlNlYXJjaFJlc3VsdHMvJTdCJTIycSUyMiUzQSUyMnN3ZXJ2ZSUyMiU3RA
         double turnGearRatio = 7.0/150.0;
-        driveMotor.setPositionConversionFactor(wheelCircumference * driveGearRatio);
-        turningMotor.setPositionConversionFactor(2 * Math.PI * turnGearRatio);
+        // driveMotor.setPositionConversionFactor(wheelCircumference * driveGearRatio);
+        // turningMotor.setPositionConversionFactor(2 * Math.PI * turnGearRatio);
 
         //Find function to make turning PID input continuous and limited to pi to -pi
-        turningMotor.getPIDController().setPositionPIDWrappingMinInput(-Math.PI);
-        turningMotor.getPIDController().setPositionPIDWrappingMaxInput(Math.PI);
-        turningMotor.getPIDController().setPositionPIDWrappingEnabled(true);
+        // turningMotor.getPIDController().setPositionPIDWrappingMinInput(-Math.PI);
+        // turningMotor.getPIDController().setPositionPIDWrappingMaxInput(Math.PI);
+        // turningMotor.getPIDController().setPositionPIDWrappingEnabled(true);
     }
 
     public SwerveModulePosition getPosition() {
@@ -87,9 +89,10 @@ public class SwerveModule {
         //     m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
     
        // driveMotor.setVoltage(driveOutput); //+ driveFeedforward);
-       driveMotor.getPIDController().setReference(state.speedMetersPerSecond * 3000, ControlType.kVelocity);
+       // System.out.println("Target RPM: " + state.speedMetersPerSecond * 4000);
 
-       turningMotor.getPIDController().setReference(state.angle.getRotations() * 3000 , ControlType.kPosition);
+       driveMotor.getPIDController().setReference(state.speedMetersPerSecond * 4000, ControlType.kVelocity);
+       turningMotor.getPIDController().setReference(state.angle.getDegrees() * (6.31 / 360) + turningMotor.getPosition(), ControlType.kPosition);
        //System.out.println(state.angle.getRadians());
        //turningMotor.getPIDController().setReference(state.angle.getDegrees(), ControlType.kPosition);
        //driveMotor.set(.5);
