@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.SPI;
@@ -70,6 +71,9 @@ public class Drivetrain {
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
+        MathUtil.applyDeadband(xSpeed, 0.03d);
+        MathUtil.applyDeadband(ySpeed, 0.03d);
+        MathUtil.applyDeadband(rot, 0.03d);
 //        xSpeed = 0;
 //        ySpeed = 0;
 //        rot = 0;
