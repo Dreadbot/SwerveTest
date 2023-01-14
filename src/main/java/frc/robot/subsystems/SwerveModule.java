@@ -22,15 +22,15 @@ public class SwerveModule {
     private CANCoder turningEncoder;
 
     //Configure below variables for our bot
-    private final PIDController drivePIDController = new PIDController(.001, 0, 0);
+    private final PIDController drivePIDController = new PIDController(.0000001, 0, 0);
 
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1/1.5, 3/1.5);
-    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1/1.5, 0.5/1.5);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1/2, 3/2);
+    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1/2, 0.5/2);
 
     //Setup trapeziod profile later on for max speeds
     private ProfiledPIDController m_turningPIDController =
          new ProfiledPIDController(
-            .001,
+            .0000001,
             0,
             0, 
             new TrapezoidProfile.Constraints(
@@ -48,23 +48,32 @@ public class SwerveModule {
 
             turningMotor.setPositionConversionFactor(2 * Math.PI/kEncoderResolution);
 
-            turningMotor.setPosition(0);
+            //turningMotor.setPosition(0);
 
             //Find function to make turning PID input continuous and limited to pi to -pi
-            // turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-            // turningEncoder.setPosition(0);
-            // System.out.println(turningEncoder.getAbsolutePosition());
+            turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+            //turningEncoder.
+            //turningEncoder.setPosition(90);
     }
-
+ 
     public SwerveModulePosition getPosition() {
+
         return new SwerveModulePosition(
-            driveMotor.getPosition(), new Rotation2d(turningMotor.getPosition()));
+            driveMotor.getPosition(), new Rotation2d().fromDegrees(turningEncoder.getAbsolutePosition()));
     }
 
+    int i = 0;
     public void setDesiredState(SwerveModuleState desiredState){
-        SwerveModuleState state =
-            SwerveModuleState.optimize(desiredState, new Rotation2d(turningMotor.getPosition()));
+        if(i % 50 == 0)
+            System.out.println(turningEncoder.getAbsolutePosition());
+        i++;
+        
+        SwerveModuleState state = desiredState;
+            //SwerveModuleState.optimize(desiredState, new Rotation2d().fromDegrees(turningEncoder.getAbsolutePosition()));
             
+            if(i % 50 == 0)
+                System.out.println("Target" + state.angle.getDegrees());
+
         final double driveOutput = 
             drivePIDController.calculate(driveMotor.getVelocity());
 
@@ -72,12 +81,12 @@ public class SwerveModule {
 
         // Calculate the turning motor output from the turning PID controller.
         final double turnOutput =
-            m_turningPIDController.calculate(turningMotor.getPosition(), state.angle.getRadians());
+            m_turningPIDController.calculate(turningEncoder.getAbsolutePosition(), state.angle.getDegrees());
     
         final double turnFeedforward =
             m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
     
-        driveMotor.setVoltage(driveOutput + driveFeedforward);
-        turningMotor.setVoltage(turnOutput + turnFeedforward);
+        driveMotor.setVoltage((driveOutput + driveFeedforward) );
+        turningMotor.setVoltage((turnOutput + turnFeedforward) );
     }
 }

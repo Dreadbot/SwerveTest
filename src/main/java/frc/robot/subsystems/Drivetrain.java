@@ -76,20 +76,20 @@ public class Drivetrain {
 
     int i = 0;
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
-        MathUtil.applyDeadband(xSpeed, .03);
-        MathUtil.applyDeadband(ySpeed, .03);
-        MathUtil.applyDeadband(rot, .03);
+        MathUtil.applyDeadband(xSpeed, .05);
+        MathUtil.applyDeadband(ySpeed, .05);
+        MathUtil.applyDeadband(rot, .05);
 
         var swerveModuleStates = 
             kinematics.toSwerveModuleStates(
                 new ChassisSpeeds(xSpeed, ySpeed, rot)
             );
 
-        if(i % 50 == 0)
-            System.out.println(swerveModuleStates[0].speedMetersPerSecond);
-        i++;
+        // if(i % 50 == 0)
+        //     System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+        // i++;
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 3.0);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 5.0);
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
