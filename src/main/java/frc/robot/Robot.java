@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Drivetrain;
@@ -29,10 +30,9 @@ public class Robot extends TimedRobot {
   private DreadbotMotor frontLeftDriveMotor = new DreadbotMotor(new CANSparkMax(1, MotorType.kBrushless), "FrontLeftDrive");
   private DreadbotMotor frontLeftTurningMotor = new DreadbotMotor(new CANSparkMax(2, MotorType.kBrushless), "FrontLeftTurning");
   private CANCoder frontLeftEncoder = new CANCoder(9);
-
   private DreadbotMotor frontRightDriveMotor = new DreadbotMotor(new CANSparkMax(7, MotorType.kBrushless), "FrontRightDrive");
   private DreadbotMotor frontRightTurningMotor = new DreadbotMotor(new CANSparkMax(8, MotorType.kBrushless), "FrontRightTurning");
-  private CANCoder frontRightEncoder = new CANCoder(13);
+  private CANCoder frontRightEncoder = new CANCoder(12);
 
   private DreadbotMotor backLeftDriveMotor = new DreadbotMotor(new CANSparkMax(3, MotorType.kBrushless), "BackLeftDrive");
   private DreadbotMotor backLeftTurningMotor = new DreadbotMotor(new CANSparkMax(4, MotorType.kBrushless), "BackLeftTurning");
@@ -67,6 +67,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    SmartDashboard.putNumber("DriveP", 1e-4);
+    SmartDashboard.putNumber("TurningP", 1e-4);
+    SmartDashboard.putNumber("TurningKs", 0.1);
+    SmartDashboard.putNumber("TurningKv", 0.05);
   }
 
   /**
