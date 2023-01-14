@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -16,7 +18,7 @@ public class SwerveModule {
 
     private DreadbotMotor driveMotor;
     private DreadbotMotor turningMotor;
-
+    private CANCoder turningEncoder;
     //Configure below variables for our bot
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
 
@@ -34,25 +36,26 @@ public class SwerveModule {
 
     public SwerveModule(
         DreadbotMotor driveMotor,
-        DreadbotMotor turningMotor) {
+        DreadbotMotor turningMotor,
+        CANCoder turningEncoder) {
             this.driveMotor = driveMotor;
             this.turningMotor = turningMotor;
+            this.turningEncoder = turningEncoder;
 
             driveMotor.setPositionConversionFactor(2 * Math.PI * kWheelRadius / kEncoderResolution);
 
             turningMotor.setPositionConversionFactor(2 * Math.PI/kEncoderResolution);
-
             //Find function to make turning PID input continuous and limited to pi to -pi
     }
 
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-            driveMotor.getPosition(), new Rotation2d(turningMotor.getPosition()));
+            driveMotor.getPosition(), new Rotation2d(turningEncoder.getPosition()));
     }
 
     public void setDesiredState(SwerveModuleState desiredState){
         SwerveModuleState state =
-            SwerveModuleState.optimize(desiredState, new Rotation2d(turningMotor.getPosition()));
+            SwerveModuleState.optimize(desiredState, new Rotation2d(turningEncoder.getPosition()));
             
         final double driveOutput = 
             drivePIDController.calculate(driveMotor.getVelocity());
@@ -61,7 +64,7 @@ public class SwerveModule {
 
         // Calculate the turning motor output from the turning PID controller.
         final double turnOutput =
-            m_turningPIDController.calculate(turningMotor.getPosition(), state.angle.getRadians());
+            m_turningPIDController.calculate(turningEncoder.getPosition(), state.angle.getRadians());
     
         final double turnFeedforward =
             m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -34,18 +35,22 @@ public class Drivetrain {
     public Drivetrain(
         DreadbotMotor frontLeftDriveMotor,
         DreadbotMotor frontLeftTurningMotor,
+        CANCoder frontLeftTurningEncoder,
         DreadbotMotor frontRightDriveMotor,
         DreadbotMotor frontRightTurningMotor,
+        CANCoder frontRightTurningEncoder,
         DreadbotMotor backLeftDriveMotor,
         DreadbotMotor backLeftTurningMotor,
+        CANCoder backLeftTurningEncoder,
         DreadbotMotor backRightDriveMotor,
-        DreadbotMotor backRightTurningMotor
+        DreadbotMotor backRightTurningMotor,
+        CANCoder backRightTurningEncoder
         ){
 
-        frontLeftModule = new SwerveModule(frontLeftDriveMotor, frontLeftTurningMotor);
-        frontRightModule = new SwerveModule(frontRightDriveMotor, frontRightTurningMotor);
-        backLeftModule = new SwerveModule(backLeftDriveMotor, backLeftTurningMotor);
-        backRightModule = new SwerveModule(backRightDriveMotor, backRightTurningMotor);
+        frontLeftModule = new SwerveModule(frontLeftDriveMotor, frontLeftTurningMotor, frontLeftTurningEncoder);
+        frontRightModule = new SwerveModule(frontRightDriveMotor, frontRightTurningMotor, frontRightTurningEncoder);
+        backLeftModule = new SwerveModule(backLeftDriveMotor, backLeftTurningMotor, backLeftTurningEncoder);
+        backRightModule = new SwerveModule(backRightDriveMotor, backRightTurningMotor, backRightTurningEncoder);
         gyro.reset();
 
         odometry  = 
