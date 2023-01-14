@@ -29,19 +29,19 @@ public class SwerveModule {
     // private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
 
     //Setup trapeziod profile later on for max speeds
-    // private ProfiledPIDController m_turningPIDController =
-    //      new ProfiledPIDController(
-    //         1,
-    //         0,
-    //         0, 
-    //         new TrapezoidProfile.Constraints(
-    //             Math.PI, 2* Math.PI));
+    private ProfiledPIDController m_turningPIDController =
+         new ProfiledPIDController(
+            .015,
+            0,
+            0, 
+            new TrapezoidProfile.Constraints(
+                Math.PI, 2* Math.PI));
 
     public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turningMotor, CANCoder turningEncoder) {
         this.driveMotor = driveMotor;
         this.turningMotor = turningMotor;
         this.turningEncoder = turningEncoder;
-        driveMotor.setP(.000005);
+        driveMotor.setP(.0001);
         turningMotor.setP(.015);
         turningMotor.getPIDController().setOutputRange(-1, 1);
         driveMotor.setIdleMode(IdleMode.kCoast);
@@ -68,13 +68,21 @@ public class SwerveModule {
 
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-            driveMotor.getPosition(), new Rotation2d(turningMotor.getPosition()));
+            driveMotor.getPosition(), new Rotation2d(turningEncoder.getAbsolutePosition()));
     }
 
+    int i =0;
     public void setDesiredState(SwerveModuleState desiredState){
         SwerveModuleState state =
-            SwerveModuleState.optimize(desiredState, new Rotation2d(turningMotor.getPosition()));
-            
+            SwerveModuleState.optimize(desiredState, new Rotation2d(turningEncoder.getAbsolutePosition()));
+
+            driveMotor.setVoltage(state.speedMetersPerSecond);
+
+
+            if(i % 50 == 0 ){
+                System.out.println(turningEncoder.getAbsolutePosition());
+            }
+            i++;
         //final double driveOutput = 
             //driveMotor.getPIDController().setReference(state.speedMetersPerSecond, ControlType.kVelocity);
 
@@ -82,8 +90,9 @@ public class SwerveModule {
         //final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
-        // final double turnOutput =
-        //     m_turningPIDController.calculate(turningMotor.getPosition(), state.angle.getRadians());
+        
+        final double turnOutput =
+             m_turningPIDController.calculate(turningMotor.getPosition(), state.angle.getRadians());
     
         // final double turnFeedforward =
         //     m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
@@ -91,13 +100,14 @@ public class SwerveModule {
        // driveMotor.setVoltage(driveOutput); //+ driveFeedforward);
        // System.out.println("Target RPM: " + state.speedMetersPerSecond * 4000);
 
-       driveMotor.getPIDController().setReference(state.speedMetersPerSecond * 4000, ControlType.kVelocity);
-       turningMotor.getPIDController().setReference(state.angle.getDegrees() * (6.31 / 360) + turningMotor.getPosition(), ControlType.kPosition);
+       //This was working kinda
+    //    driveMotor.getPIDController().setReference(state.speedMetersPerSecond * 4000, ControlType.kVelocity);
+    //    turningMotor.getPIDController().setReference(state.angle.getDegrees() * (6.31 / 360) + turningMotor.getPosition(), ControlType.kPosition);
        //System.out.println(state.angle.getRadians());
        //turningMotor.getPIDController().setReference(state.angle.getDegrees(), ControlType.kPosition);
        //driveMotor.set(.5);
         //System.out.println("Velocity " + state.speedMetersPerSecond * 2);
         //turningMotor.setReference(state.angle.getRadians(), ControlType.kPosition);
-        //turningMotor.setVoltage(turnOutput); //+ turnFeedforward);
+        turningMotor.setVoltage(turnOutput); //+ turnFeedforward);
     }
 }
