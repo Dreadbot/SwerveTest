@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -16,6 +18,7 @@ public class SwerveModule {
 
     private DreadbotMotor driveMotor;
     private DreadbotMotor turningMotor;
+    private CANCoder turningEncoder;
 
     //Configure below variables for our bot
     private final PIDController drivePIDController = new PIDController(1, 0, 0);
@@ -34,9 +37,11 @@ public class SwerveModule {
 
     public SwerveModule(
         DreadbotMotor driveMotor,
-        DreadbotMotor turningMotor) {
+        DreadbotMotor turningMotor, 
+        CANCoder turningEncoder) {
             this.driveMotor = driveMotor;
             this.turningMotor = turningMotor;
+            this.turningEncoder = turningEncoder;
 
             driveMotor.setPositionConversionFactor(2 * Math.PI * kWheelRadius / kEncoderResolution);
 
