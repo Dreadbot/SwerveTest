@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -26,7 +27,7 @@ public class Drivetrain {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private AHRS gyro = new AHRS(SerialPort.Port.kUSB);
+    private AHRS gyro = new AHRS(SerialPort.Port.kMXP);
 
     private SwerveDriveKinematics kinematics;
 
@@ -46,7 +47,6 @@ public class Drivetrain {
         DreadbotMotor backRightTurningMotor,
         CANCoder backRightTurningEncoder
         ){
-
         frontLeftModule = new SwerveModule(frontLeftDriveMotor, frontLeftTurningMotor, frontLeftTurningEncoder);
         frontRightModule = new SwerveModule(frontRightDriveMotor, frontRightTurningMotor, frontRightTurningEncoder);
         backLeftModule = new SwerveModule(backLeftDriveMotor, backLeftTurningMotor, backLeftTurningEncoder);
@@ -74,13 +74,20 @@ public class Drivetrain {
         
     }
 
+    int i = 0;
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
+        MathUtil.applyDeadband(xSpeed, .03);
+        MathUtil.applyDeadband(ySpeed, .03);
+        MathUtil.applyDeadband(rot, .03);
+
         var swerveModuleStates = 
             kinematics.toSwerveModuleStates(
                 new ChassisSpeeds(xSpeed, ySpeed, rot)
             );
 
-        System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+        if(i % 50 == 0)
+            System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+        i++;
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 3.0);
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
@@ -88,6 +95,6 @@ public class Drivetrain {
         backLeftModule.setDesiredState(swerveModuleStates[2]);
         backRightModule.setDesiredState(swerveModuleStates[3]);
 
-        System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+        //System.out.println(swerveModuleStates[0].speedMetersPerSecond);
     }
 }

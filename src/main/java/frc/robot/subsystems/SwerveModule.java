@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -21,15 +22,15 @@ public class SwerveModule {
     private CANCoder turningEncoder;
 
     //Configure below variables for our bot
-    private final PIDController drivePIDController = new PIDController(1, 0, 0);
+    private final PIDController drivePIDController = new PIDController(.001, 0, 0);
 
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 3);
-    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1/1.5, 3/1.5);
+    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1/1.5, 0.5/1.5);
 
     //Setup trapeziod profile later on for max speeds
     private ProfiledPIDController m_turningPIDController =
          new ProfiledPIDController(
-            1,
+            .001,
             0,
             0, 
             new TrapezoidProfile.Constraints(
@@ -47,7 +48,12 @@ public class SwerveModule {
 
             turningMotor.setPositionConversionFactor(2 * Math.PI/kEncoderResolution);
 
+            turningMotor.setPosition(0);
+
             //Find function to make turning PID input continuous and limited to pi to -pi
+            // turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+            // turningEncoder.setPosition(0);
+            // System.out.println(turningEncoder.getAbsolutePosition());
     }
 
     public SwerveModulePosition getPosition() {

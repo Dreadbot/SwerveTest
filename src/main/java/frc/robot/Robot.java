@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -27,27 +28,35 @@ public class Robot extends TimedRobot {
 
   private DreadbotMotor frontLeftDriveMotor = new DreadbotMotor(new CANSparkMax(1, MotorType.kBrushless), "FrontLeftDrive");
   private DreadbotMotor frontLeftTurningMotor = new DreadbotMotor(new CANSparkMax(2, MotorType.kBrushless), "FrontLeftTurning");
+  private CANCoder frontLeftTurningEncoder = new CANCoder(9);
 
   private DreadbotMotor frontRightDriveMotor = new DreadbotMotor(new CANSparkMax(7, MotorType.kBrushless), "FrontRightDrive");
   private DreadbotMotor frontRightTurningMotor = new DreadbotMotor(new CANSparkMax(8, MotorType.kBrushless), "FrontRightTurning");
+  private CANCoder frontRightTurningEncoder = new CANCoder(12);
 
   private DreadbotMotor backLeftDriveMotor = new DreadbotMotor(new CANSparkMax(3, MotorType.kBrushless), "BackLeftDrive");
   private DreadbotMotor backLeftTurningMotor = new DreadbotMotor(new CANSparkMax(4, MotorType.kBrushless), "BackLeftTurning");
+  private CANCoder backLeftTurningEncoder = new CANCoder(10);
 
   private DreadbotMotor backRightDriveMotor = new DreadbotMotor(new CANSparkMax(5, MotorType.kBrushless), "BackRightDrive");
   private DreadbotMotor backRightTurningMotor = new DreadbotMotor(new CANSparkMax(6, MotorType.kBrushless), "BackRightTurning");
+  private CANCoder backRightTurningEncoder = new CANCoder(11);
 
   DreadbotController controller = new DreadbotController(0);
   
   Drivetrain drive = new Drivetrain(
     frontLeftDriveMotor,
     frontLeftTurningMotor,
+    frontLeftTurningEncoder,
     frontRightDriveMotor,
     frontRightTurningMotor,
+    frontRightTurningEncoder,
     backLeftDriveMotor,
     backLeftTurningMotor,
+    backLeftTurningEncoder,
     backRightDriveMotor, 
-    backRightTurningMotor);
+    backRightTurningMotor,
+    backRightTurningEncoder);
 
   /**
    * This function is run when the robot is first started up and should be used for any
