@@ -82,14 +82,14 @@ public class Drivetrain {
 
         var swerveModuleStates = 
             kinematics.toSwerveModuleStates(
-                new ChassisSpeeds(xSpeed, ySpeed, rot)
+                ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
             );
 
         // if(i % 50 == 0)
         //     System.out.println(swerveModuleStates[0].speedMetersPerSecond);
         // i++;
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 5.0);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 3.0);
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);

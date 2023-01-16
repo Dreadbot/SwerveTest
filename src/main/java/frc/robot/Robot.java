@@ -87,7 +87,8 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -141,4 +142,54 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  private void calibrateEncoders(){
+    boolean areCalibrated = false;
+
+    while (!areCalibrated) {
+      //System.out.println("Flood");
+      if(Math.abs(frontLeftTurningEncoder.getAbsolutePosition() - -154.5d) <= .5){
+        frontLeftTurningMotor.set(.5);
+      }
+      else{
+        frontLeftTurningMotor.set(0);
+      }
+
+      if(Math.abs(frontRightTurningEncoder.getAbsolutePosition() - -33.0d) <= .5){
+        frontRightTurningMotor.set(.1);
+      }
+      else{
+        frontRightTurningMotor.set(0);
+      }
+
+      if(Math.abs(backLeftTurningEncoder.getAbsolutePosition() - -132.0d) <= .5){
+        backLeftTurningMotor.set(.1);
+      }
+      else{
+        backLeftTurningMotor.set(0);
+      }
+
+      if(Math.abs(backRightTurningEncoder.getAbsolutePosition() - 63.7d) <= .5){
+        backRightTurningMotor.set(.1);
+      }
+      else{
+        backRightTurningMotor.set(0);
+      }
+
+      if(
+        Math.abs(frontLeftTurningEncoder.getAbsolutePosition() - -154.5d) <= .5 &&
+        Math.abs(frontRightTurningEncoder.getAbsolutePosition() - -33.0d) <= .5 &&
+        Math.abs(backLeftTurningEncoder.getAbsolutePosition() - -132.0d) <= .5 &&
+        Math.abs(backRightTurningEncoder.getAbsolutePosition() - 63.7d) <= .5
+      ){
+        areCalibrated = true;
+      }
+    }
+
+    frontLeftTurningEncoder.setPosition(0);
+    frontRightTurningEncoder.setPosition(0);
+    backLeftTurningEncoder.setPosition(0);
+    backRightTurningEncoder.setPosition(0);
+    System.out.println("DONE");
+  }
 }

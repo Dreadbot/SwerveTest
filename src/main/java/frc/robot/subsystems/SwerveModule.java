@@ -25,7 +25,7 @@ public class SwerveModule {
     private final PIDController drivePIDController = new PIDController(.0000001, 0, 0);
 
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1/2, 3/2);
-    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1/2, 0.5/2);
+    private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1/20, 0.5/20);
 
     //Setup trapeziod profile later on for max speeds
     private ProfiledPIDController m_turningPIDController =
@@ -64,16 +64,14 @@ public class SwerveModule {
 
     int i = 0;
     public void setDesiredState(SwerveModuleState desiredState){
-        if(i % 50 == 0)
-            System.out.println(turningEncoder.getAbsolutePosition());
-        i++;
         
         SwerveModuleState state = desiredState;
             //SwerveModuleState.optimize(desiredState, new Rotation2d().fromDegrees(turningEncoder.getAbsolutePosition()));
             
-            if(i % 50 == 0)
-                System.out.println("Target" + state.angle.getDegrees());
-
+            if(i % 400 == 0){
+                System.out.println("Target " + state.angle.getDegrees());
+                System.out.println("Actual " + turningEncoder.getAbsolutePosition());
+            }
         final double driveOutput = 
             drivePIDController.calculate(driveMotor.getVelocity());
 
@@ -83,9 +81,15 @@ public class SwerveModule {
         final double turnOutput =
             m_turningPIDController.calculate(turningEncoder.getAbsolutePosition(), state.angle.getDegrees());
     
-        final double turnFeedforward =
-            m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
-    
+            
+        final double turnFeedforward;
+        if(Math.abs(turningEncoder.getAbsolutePosition() - state.angle.getDegrees()) <= 5.0){
+            System.out.println("HIT");
+            turnFeedforward = 0;
+        } else {
+            turnFeedforward = 
+                m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
+        }
         driveMotor.setVoltage((driveOutput + driveFeedforward) );
         turningMotor.setVoltage((turnOutput + turnFeedforward) );
     }
