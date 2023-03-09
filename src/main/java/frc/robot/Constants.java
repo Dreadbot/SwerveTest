@@ -22,5 +22,9 @@ public final class Constants {
   public static class SwerveConstants {
     public static final double ATTAINABLE_MAX_SPEED = 3.0;
     public static final double WHEEL_BASE_LENGTH = Units.inchesToMeters(13.0);
+    public static final double FRONT_LEFT_ENCODER_OFFSET = -23.55;
+    public static final double FRONT_RIGHT_ENCODER_OFFSET = -33.13;
+    public static final double BACK_LEFT_ENCODER_OFFSET = -45.88;
+    public static final double BACK_RIGHT_ENCODER_OFFSET = 56.51;
   }
 }
