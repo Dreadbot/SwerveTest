@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.DreadbotController;
 import frc.robot.util.misc.DreadbotMotor;
+import frc.robot.subsystems.Drivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -25,10 +26,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private CANCoder frontLeft = new CANCoder(9);
-  private CANCoder frontRight = new CANCoder(12);
-  private CANCoder backLeft = new CANCoder(10);
-  private CANCoder backRight = new CANCoder(11);
+
+  private Drivetrain drive = new Drivetrain();
 
   DreadbotController controller = new DreadbotController(0);
 
@@ -95,10 +94,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putNumber("Front Left Encoder", frontLeft.getAbsolutePosition());
-    SmartDashboard.putNumber("Front Right Encoder", frontRight.getAbsolutePosition());
-    SmartDashboard.putNumber("Back Left Encoder", backLeft.getAbsolutePosition());
-    SmartDashboard.putNumber("Back Right Encoder", backRight.getAbsolutePosition());
+    drive.drive(controller.getXAxis(), controller.getYAxis(), controller.getZAxis(), false);
   }
 
   @Override
