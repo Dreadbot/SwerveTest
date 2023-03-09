@@ -4,13 +4,14 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.DreadbotController;
 import frc.robot.util.misc.DreadbotMotor;
 
@@ -24,30 +25,12 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
-  private DreadbotMotor frontLeftDriveMotor = new DreadbotMotor(new CANSparkMax(1, MotorType.kBrushless), "FrontLeftDrive");
-  private DreadbotMotor frontLeftTurningMotor = new DreadbotMotor(new CANSparkMax(2, MotorType.kBrushless), "FrontLeftTurning");
-
-  private DreadbotMotor frontRightDriveMotor = new DreadbotMotor(new CANSparkMax(7, MotorType.kBrushless), "FrontRightDrive");
-  private DreadbotMotor frontRightTurningMotor = new DreadbotMotor(new CANSparkMax(8, MotorType.kBrushless), "FrontRightTurning");
-
-  private DreadbotMotor backLeftDriveMotor = new DreadbotMotor(new CANSparkMax(3, MotorType.kBrushless), "BackLeftDrive");
-  private DreadbotMotor backLeftTurningMotor = new DreadbotMotor(new CANSparkMax(4, MotorType.kBrushless), "BackLeftTurning");
-
-  private DreadbotMotor backRightDriveMotor = new DreadbotMotor(new CANSparkMax(5, MotorType.kBrushless), "BackRightDrive");
-  private DreadbotMotor backRightTurningMotor = new DreadbotMotor(new CANSparkMax(6, MotorType.kBrushless), "BackRightTurning");
+  private CANCoder frontLeft = new CANCoder(9);
+  private CANCoder frontRight = new CANCoder(12);
+  private CANCoder backLeft = new CANCoder(10);
+  private CANCoder backRight = new CANCoder(11);
 
   DreadbotController controller = new DreadbotController(0);
-  
-  Drivetrain drive = new Drivetrain(
-    frontLeftDriveMotor,
-    frontLeftTurningMotor,
-    frontRightDriveMotor,
-    frontRightTurningMotor,
-    backLeftDriveMotor,
-    backLeftTurningMotor,
-    backRightDriveMotor, 
-    backRightTurningMotor);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -112,7 +95,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.drive(controller.getXAxis(), controller.getYAxis(), controller.getZAxis(), true);
+    SmartDashboard.putNumber("Front Left Encoder", frontLeft.getAbsolutePosition());
+    SmartDashboard.putNumber("Front Right Encoder", frontRight.getAbsolutePosition());
+    SmartDashboard.putNumber("Back Left Encoder", backLeft.getAbsolutePosition());
+    SmartDashboard.putNumber("Back Right Encoder", backRight.getAbsolutePosition());
   }
 
   @Override

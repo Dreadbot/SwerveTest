@@ -12,76 +12,76 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.misc.DreadbotMotor;
 import edu.wpi.first.wpilibj.SerialPort;
 
-public class Drivetrain {
-    //Double check locations
-    //What is location in comparasion to front of bot 
-    //Example x and y's seem to be swapped?
-    private final Translation2d frontLeftLocation = new Translation2d(0.15875, 0.15875);
-    private final Translation2d frontrightLocation = new Translation2d(-0.15875, 0.15875);
-    private final Translation2d backLeftLocation = new Translation2d(0.15875, -0.15875);
-    private final Translation2d backRightLocation = new Translation2d(-0.15875, -0.15875);
+// public class Drivetrain {
+//     //Double check locations
+//     //What is location in comparasion to front of bot 
+//     //Example x and y's seem to be swapped?
+//     private final Translation2d frontLeftLocation = new Translation2d(0.15875, 0.15875);
+//     private final Translation2d frontrightLocation = new Translation2d(-0.15875, 0.15875);
+//     private final Translation2d backLeftLocation = new Translation2d(0.15875, -0.15875);
+//     private final Translation2d backRightLocation = new Translation2d(-0.15875, -0.15875);
 
-    private SwerveModule frontLeftModule;
-    private SwerveModule frontRightModule;
-    private SwerveModule backLeftModule;
-    private SwerveModule backRightModule;
+//     private SwerveModule frontLeftModule;
+//     private SwerveModule frontRightModule;
+//     private SwerveModule backLeftModule;
+//     private SwerveModule backRightModule;
 
-    private AHRS gyro = new AHRS(SerialPort.Port.kUSB);
+//     private AHRS gyro = new AHRS(SerialPort.Port.kUSB);
 
-    private SwerveDriveKinematics kinematics;
+//     private SwerveDriveKinematics kinematics;
 
-    private SwerveDriveOdometry odometry;
+//     private SwerveDriveOdometry odometry;
 
-    public Drivetrain(
-            DreadbotMotor frontLeftDriveMotor,
-            DreadbotMotor frontLeftTurningMotor,
-            DreadbotMotor frontRightDriveMotor,
-            DreadbotMotor frontRightTurningMotor,
-            DreadbotMotor backLeftDriveMotor,
-            DreadbotMotor backLeftTurningMotor,
-            DreadbotMotor backRightDriveMotor,
-            DreadbotMotor backRightTurningMotor
-        ) {
+//     public Drivetrain(
+//             DreadbotMotor frontLeftDriveMotor,
+//             DreadbotMotor frontLeftTurningMotor,
+//             DreadbotMotor frontRightDriveMotor,
+//             DreadbotMotor frontRightTurningMotor,
+//             DreadbotMotor backLeftDriveMotor,
+//             DreadbotMotor backLeftTurningMotor,
+//             DreadbotMotor backRightDriveMotor,
+//             DreadbotMotor backRightTurningMotor
+//         ) {
 
-        frontLeftModule = new SwerveModule(frontLeftDriveMotor, frontLeftTurningMotor);
-        frontRightModule = new SwerveModule(frontRightDriveMotor, frontRightTurningMotor);
-        backLeftModule = new SwerveModule(backLeftDriveMotor, backLeftTurningMotor);
-        backRightModule = new SwerveModule(backRightDriveMotor, backRightTurningMotor);
-        gyro.reset();
+//         // frontLeftModule = new SwerveModule(frontLeftDriveMotor, frontLeftTurningMotor);
+//         // frontRightModule = new SwerveModule(frontRightDriveMotor, frontRightTurningMotor);
+//         // backLeftModule = new SwerveModule(backLeftDriveMotor, backLeftTurningMotor);
+//         // backRightModule = new SwerveModule(backRightDriveMotor, backRightTurningMotor);
+//         gyro.reset();
 
-        kinematics = new SwerveDriveKinematics(
-            frontLeftLocation,
-            frontrightLocation,
-            backLeftLocation,
-            backRightLocation
-        );
+//         kinematics = new SwerveDriveKinematics(
+//             frontLeftLocation,
+//             frontrightLocation,
+//             backLeftLocation,
+//             backRightLocation
+//         );
 
-        odometry  = new SwerveDriveOdometry(
-            kinematics,
-            gyro.getRotation2d(),
-            new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()
-            }
-        );
-    }
+//         odometry  = new SwerveDriveOdometry(
+//             kinematics,
+//             gyro.getRotation2d(),
+//             new SwerveModulePosition[] {
+//                 frontLeftModule.getPosition(),
+//                 frontRightModule.getPosition(),
+//                 backLeftModule.getPosition(),
+//                 backRightModule.getPosition()
+//             }
+//         );
+//     }
 
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
-        var swerveModuleStates = 
-            kinematics.toSwerveModuleStates(
-                new ChassisSpeeds(xSpeed, ySpeed, rot)
-            );
+//     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
+//         var swerveModuleStates = 
+//             kinematics.toSwerveModuleStates(
+//                 new ChassisSpeeds(xSpeed, ySpeed, rot)
+//             );
 
-        System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+//         System.out.println(swerveModuleStates[0].speedMetersPerSecond);
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
-        frontLeftModule.setDesiredState(swerveModuleStates[0]);
-        frontRightModule.setDesiredState(swerveModuleStates[1]);
-        backLeftModule.setDesiredState(swerveModuleStates[2]);
-        backRightModule.setDesiredState(swerveModuleStates[3]);
+//         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
+//         frontLeftModule.setDesiredState(swerveModuleStates[0]);
+//         frontRightModule.setDesiredState(swerveModuleStates[1]);
+//         backLeftModule.setDesiredState(swerveModuleStates[2]);
+//         backRightModule.setDesiredState(swerveModuleStates[3]);
 
-        System.out.println(swerveModuleStates[0].speedMetersPerSecond);
-    }
-}
+//         System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+//     }
+// }
