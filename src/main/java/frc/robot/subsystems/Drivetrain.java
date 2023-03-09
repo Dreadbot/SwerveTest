@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.misc.DreadbotMotor;
 import edu.wpi.first.wpilibj.SerialPort;
 
@@ -32,15 +33,15 @@ public class Drivetrain {
     private SwerveDriveOdometry odometry;
 
     public Drivetrain(
-        DreadbotMotor frontLeftDriveMotor,
-        DreadbotMotor frontLeftTurningMotor,
-        DreadbotMotor frontRightDriveMotor,
-        DreadbotMotor frontRightTurningMotor,
-        DreadbotMotor backLeftDriveMotor,
-        DreadbotMotor backLeftTurningMotor,
-        DreadbotMotor backRightDriveMotor,
-        DreadbotMotor backRightTurningMotor
-        ){
+            DreadbotMotor frontLeftDriveMotor,
+            DreadbotMotor frontLeftTurningMotor,
+            DreadbotMotor frontRightDriveMotor,
+            DreadbotMotor frontRightTurningMotor,
+            DreadbotMotor backLeftDriveMotor,
+            DreadbotMotor backLeftTurningMotor,
+            DreadbotMotor backRightDriveMotor,
+            DreadbotMotor backRightTurningMotor
+        ) {
 
         frontLeftModule = new SwerveModule(frontLeftDriveMotor, frontLeftTurningMotor);
         frontRightModule = new SwerveModule(frontRightDriveMotor, frontRightTurningMotor);
@@ -48,25 +49,23 @@ public class Drivetrain {
         backRightModule = new SwerveModule(backRightDriveMotor, backRightTurningMotor);
         gyro.reset();
 
-        odometry  = 
-            new SwerveDriveOdometry(
-                kinematics,
-                gyro.getRotation2d(),
-                new SwerveModulePosition[] {
-                    frontLeftModule.getPosition(),
-                    frontRightModule.getPosition(),
-                    backLeftModule.getPosition(),
-                    backRightModule.getPosition()
-                });
-
-        kinematics = 
-        new SwerveDriveKinematics(
+        kinematics = new SwerveDriveKinematics(
             frontLeftLocation,
             frontrightLocation,
             backLeftLocation,
             backRightLocation
         );
-        
+
+        odometry  = new SwerveDriveOdometry(
+            kinematics,
+            gyro.getRotation2d(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            }
+        );
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
@@ -77,7 +76,7 @@ public class Drivetrain {
 
         System.out.println(swerveModuleStates[0].speedMetersPerSecond);
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 3.0);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
