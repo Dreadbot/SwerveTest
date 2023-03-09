@@ -26,5 +26,7 @@ public final class Constants {
     public static final double FRONT_RIGHT_ENCODER_OFFSET = -33.13;
     public static final double BACK_LEFT_ENCODER_OFFSET = -45.88;
     public static final double BACK_RIGHT_ENCODER_OFFSET = 56.51;
+    public static final double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
   }
 }
