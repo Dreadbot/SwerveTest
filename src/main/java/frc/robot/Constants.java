@@ -20,14 +20,15 @@ public final class Constants {
   }
 
   public static class SwerveConstants {
-    public static final double ATTAINABLE_MAX_SPEED = 3.0;
+    public static final double ATTAINABLE_MAX_SPEED = 0.5;
     public static final double MODULE_OFFSET = Units.inchesToMeters(13.0) / 2; // 13 inches between wheels, half to meet at center
     // Encoder offsets are in degrees, not radians
-    public static final double FRONT_LEFT_ENCODER_OFFSET = -23.55;
-    public static final double FRONT_RIGHT_ENCODER_OFFSET = -33.13;
-    public static final double BACK_LEFT_ENCODER_OFFSET = -45.88;
-    public static final double BACK_RIGHT_ENCODER_OFFSET = 56.51;
+    public static final double FRONT_LEFT_ENCODER_OFFSET = -46.0;
+    public static final double FRONT_RIGHT_ENCODER_OFFSET = 128;
+    public static final double BACK_LEFT_ENCODER_OFFSET = -66;
+    public static final double BACK_RIGHT_ENCODER_OFFSET = 39.0;
     public static final double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
+    public static final double TURN_GEAR_RATIO = 150 / 7;
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
   }
 }

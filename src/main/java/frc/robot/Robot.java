@@ -40,6 +40,14 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    SmartDashboard.putNumber("Drive P", 0);
+    SmartDashboard.putNumber("Drive I", 0);
+    SmartDashboard.putNumber("Drive D", 0);
+    SmartDashboard.putNumber("Drive FF", 0);
+
+    
+
+
   }
 
   /**
@@ -96,7 +104,6 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     drive.drive(controller.getXAxis(), controller.getYAxis(), controller.getZAxis(), false);
   }
-
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.

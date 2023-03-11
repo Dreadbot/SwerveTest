@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.SPI;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.misc.DreadbotMotor;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain {
     //Double check locations
@@ -43,23 +44,25 @@ public class Drivetrain {
             new CANCoder(9),
             SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
         );
+        // frontLeftModule.getDriveMotor().setInverted(true);
         frontRightModule = new SwerveModule(
             new DreadbotMotor(new CANSparkMax(7, MotorType.kBrushless), "Front Right Drive"),
             new DreadbotMotor(new CANSparkMax(8, MotorType.kBrushless), "Front Right Turn"),
             new CANCoder(12),
-            SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
+            SwerveConstants.FRONT_RIGHT_ENCODER_OFFSET
         );
         backLeftModule = new SwerveModule(
             new DreadbotMotor(new CANSparkMax(3, MotorType.kBrushless), "Back Left Drive"),
             new DreadbotMotor(new CANSparkMax(4, MotorType.kBrushless), "Back Left Turn"),
             new CANCoder(10),
-            SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
+            SwerveConstants.BACK_LEFT_ENCODER_OFFSET
         );
+        // backLeftModule.getDriveMotor().setInverted(true);
         backRightModule = new SwerveModule(
             new DreadbotMotor(new CANSparkMax(5, MotorType.kBrushless), "Back Right Drive"),
             new DreadbotMotor(new CANSparkMax(6, MotorType.kBrushless), "Back Right Turn"),
             new CANCoder(11),
-            SwerveConstants.FRONT_LEFT_ENCODER_OFFSET
+            SwerveConstants.BACK_RIGHT_ENCODER_OFFSET
         );
 
         gyro.reset();
@@ -88,16 +91,16 @@ public class Drivetrain {
             kinematics.toSwerveModuleStates(
                 new ChassisSpeeds(xSpeed, ySpeed, rot)
             );
-
-        System.out.println(swerveModuleStates[0].speedMetersPerSecond);
+        frontLeftModule.putValuesToSmartDashboard("front left");
+        frontRightModule.putValuesToSmartDashboard("front right");
+        backLeftModule.putValuesToSmartDashboard("back left");
+        backRightModule.putValuesToSmartDashboard("back right");
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
         backRightModule.setDesiredState(swerveModuleStates[3]);
-
-        System.out.println(swerveModuleStates[0].speedMetersPerSecond);
     }
 
     public void updateOdometry() {
