@@ -20,7 +20,7 @@ public class SwerveModule {
     private CANCoder turningCanCoder;
     private double canCoderOffset;
     private SparkMaxPIDController drivePIDController;
-    private PIDController turningPIDController = new PIDController(0, 0, 0);
+    private PIDController turningPIDController = new PIDController(2, 0, 0);
     public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANCoder turningCanCoder, double canCoderOffset) {
         this.driveMotor = driveMotor;
         this.turningMotor = turnMotor;
