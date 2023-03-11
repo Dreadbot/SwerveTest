@@ -30,6 +30,12 @@ public class DreadbotMotor{
         this.motorEncoder = motor.getEncoder();
         this.motorPIDController = motor.getPIDController();
         this.name = name + " motor";
+
+        SmartDashboard.putNumber(name + "P value", getP());
+        SmartDashboard.putNumber(name + "I value", getI());
+        SmartDashboard.putNumber(name + "D value", getD());
+        SmartDashboard.putNumber(name + "I Zone value", getIZone());
+        SmartDashboard.putNumber(name + "FF value", getFF());
     }
 
     /**
