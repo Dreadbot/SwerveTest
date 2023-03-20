@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.DreadbotController;
+import frc.robot.util.math.DreadbotMath;
 import frc.robot.util.misc.DreadbotMotor;
 import frc.robot.subsystems.Drivetrain;
 
@@ -30,6 +31,8 @@ public class Robot extends TimedRobot {
   private Drivetrain drive = new Drivetrain();
 
   DreadbotController controller = new DreadbotController(0);
+
+  
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -102,7 +105,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.drive(controller.getXAxis(), controller.getYAxis(), controller.getZAxis(), false);
+    drive.drive(DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05),
+      DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05),
+      DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05),
+      false);
   }
   @Override
   public void testInit() {

@@ -21,6 +21,7 @@ public class SwerveModule {
     private double canCoderOffset;
     private SparkMaxPIDController drivePIDController;
     private PIDController turningPIDController = new PIDController(2, 0, 0);
+    
     public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANCoder turningCanCoder, double canCoderOffset) {
         this.driveMotor = driveMotor;
         this.turningMotor = turnMotor;
@@ -62,18 +63,19 @@ public class SwerveModule {
         // driveMotor.setD(SmartDashboard.getNumber("Drive D", 0));
         // driveMotor.setFF(SmartDashboard.getNumber("Drive FF", 0));
 
-
-
         double turnOutput = turningPIDController.calculate(Units.degreesToRadians(turningCanCoder.getAbsolutePosition()), optimizedState.angle.getRadians());
         drivePIDController.setReference(optimizedState.speedMetersPerSecond, ControlType.kVelocity);
         turningMotor.setVoltage(turnOutput);
     }
+
     public void putValuesToSmartDashboard(String name) {
         SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition());
     }
+
     public DreadbotMotor getDriveMotor() {
         return this.driveMotor;
     }
+
     public DreadbotMotor getTurnMotor() {
         return this.turningMotor;
     }
