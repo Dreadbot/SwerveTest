@@ -4,10 +4,27 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,7 +49,16 @@ public class Robot extends TimedRobot {
 
   DreadbotController controller = new DreadbotController(0);
 
-  
+  HolonomicDriveController holonomicDriveController =
+     new HolonomicDriveController(
+      new PIDController(.5, 0, 0),
+      new PIDController(.5, 0, 0),
+      new ProfiledPIDController(1, 0, 0,
+        new TrapezoidProfile.Constraints(6.28, 3.14)));
+
+  Trajectory trajectory;
+
+  State goal;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -85,11 +111,19 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+    generateTrajectory();
+    goal = trajectory.sample(trajectory.getTotalTimeSeconds());
+    
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    ChassisSpeeds trajectorySpeeds = holonomicDriveController.calculate(
+      drive.getPosition(), goal.poseMeters, kDefaultPeriod, Rotation2d.fromDegrees(0));
+
+    drive.followSpeeds(trajectorySpeeds);
+  }
 
   @Override
   public void teleopInit() {
@@ -109,7 +143,8 @@ public class Robot extends TimedRobot {
       -DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05),
       DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05),
       DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05),
-      false);
+      true
+    );
   }
   @Override
   public void testInit() {
@@ -128,4 +163,24 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  //Copied from WPI
+  public void generateTrajectory() {
+    // 2018 cross scale auto waypoints.
+    var sideStart = new Pose2d( 0, 0, new Rotation2d(0));
+    var crossScale = new Pose2d(0, 3,new Rotation2d(0));
+
+    var interiorWaypoints = new ArrayList<Translation2d>();
+    interiorWaypoints.add(new Translation2d(0, 1));
+    interiorWaypoints.add(new Translation2d(0, 2));
+
+    TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(2));
+    config.setReversed(true);
+
+    trajectory = TrajectoryGenerator.generateTrajectory(
+        sideStart,
+        interiorWaypoints,
+        crossScale,
+        config);
+  }
 }

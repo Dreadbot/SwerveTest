@@ -5,6 +5,8 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -118,5 +120,19 @@ public class Drivetrain {
                 backRightModule.getPosition()
             }
         );
+    }
+
+    public Pose2d getPosition(){
+        return odometry.getPoseMeters();
+    }
+
+    public void followSpeeds(ChassisSpeeds speeds){
+        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
+        frontLeftModule.setDesiredState(swerveModuleStates[0]);
+        frontRightModule.setDesiredState(swerveModuleStates[1]);
+        backLeftModule.setDesiredState(swerveModuleStates[2]);
+        backRightModule.setDesiredState(swerveModuleStates[3]);
     }
 }
