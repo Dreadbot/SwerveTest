@@ -105,7 +105,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.drive(DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05),
+    drive.drive(
+      -DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05),
       DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05),
       DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05),
       false);

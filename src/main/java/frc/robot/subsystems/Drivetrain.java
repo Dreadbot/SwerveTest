@@ -69,8 +69,8 @@ public class Drivetrain {
 
         kinematics = new SwerveDriveKinematics(
             frontLeftLocation,
-            frontRightLocation,
             backLeftLocation,
+            frontRightLocation,
             backRightLocation
         );
 
@@ -84,6 +84,11 @@ public class Drivetrain {
                 backRightModule.getPosition()
             }
         );
+
+        frontLeftModule.putValuesToSmartDashboard("front left");
+        frontRightModule.putValuesToSmartDashboard("front right");
+        backLeftModule.putValuesToSmartDashboard("back left");
+        backRightModule.putValuesToSmartDashboard("back right");
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
