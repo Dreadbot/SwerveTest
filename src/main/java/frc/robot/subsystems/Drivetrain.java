@@ -167,15 +167,15 @@ public class Drivetrain extends SubsystemBase {
     public Command buildAuto(HashMap<String, Command> eventMap, String pathName) {
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
             pathName,
-            new PathConstraints(4.0, 3.0)
+            new PathConstraints(1.0, 0.1)
         );
 
         SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
             this::getPosition,
             this::resetOdometry,
             kinematics,
-            new PIDConstants(1.0, 0.0, 0.0),
-            new PIDConstants(1.0, 0.0, 0.0),
+            new PIDConstants(0.0, 0.0, 0.0),
+            new PIDConstants(0.0, 0.0, 0.0),
             this::setDesiredState,
             eventMap,
             true,

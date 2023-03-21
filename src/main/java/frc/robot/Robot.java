@@ -59,8 +59,10 @@ public class Robot extends TimedRobot {
     new HolonomicDriveController(
       new PIDController(.5, 0, 0),
       new PIDController(.5, 0, 0),
-      new ProfiledPIDController(1, 0, 0,
-      new TrapezoidProfile.Constraints(6.28, 3.14))
+      new ProfiledPIDController(
+        1, 0, 0,
+        new TrapezoidProfile.Constraints(6.28, 3.14)
+      )
     );
 
   Trajectory trajectory;
@@ -70,9 +72,7 @@ public class Robot extends TimedRobot {
   boolean runningTestAuto = true;
 
   private final SendableChooser<Command> sendableChooser = new SendableChooser<>();
-  private final HashMap<String, Command> scoreLeaveBalance = new HashMap<>();
-  private final HashMap<String, Command> partialLinkBump = new HashMap<>();
-  private final HashMap<String, Command> partialLinkNonBump = new HashMap<>();
+  private final HashMap<String, Command> autonEvents = new HashMap<>();
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -121,28 +121,15 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = sendableChooser.getSelected();
 
     // schedule the autonomous command (example)
-    if (SmartDashboard.getBoolean("RunAutonPath", false)) {
+    if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
-      return;
-    }
-
-    runningTestAuto = SmartDashboard.getBoolean("RunTestAuton", true);
-    if (runningTestAuto) {
-      generateTrajectory();
-      goal = trajectory.sample(trajectory.getTotalTimeSeconds());
     }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    if (!runningTestAuto)
-      return;
-
-    ChassisSpeeds trajectorySpeeds = holonomicDriveController.calculate(
-      drive.getPosition(), goal.poseMeters, kDefaultPeriod, Rotation2d.fromDegrees(0));
-
-    drive.followSpeeds(trajectorySpeeds);
+    
   }
 
   @Override
@@ -160,9 +147,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     drive.drive(
-      -DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05),
-      DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05),
-      DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05),
+      -DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05) * 0.4,
+      -DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05) * 0.4,
+      -DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05) * 0.4,
       true
     );
   }
@@ -206,9 +193,10 @@ public class Robot extends TimedRobot {
   }
 
   private void initAutonChooser() {
-    sendableChooser.setDefaultOption("Score, Leave, & Balance", drive.buildAuto(scoreLeaveBalance, "ScoreLeaveBalance"));
-    sendableChooser.addOption("Partial Link Bump", drive.buildAuto(partialLinkBump, "PartialLinkBump"));
-    sendableChooser.addOption("Partial Link Non-Bump", drive.buildAuto(partialLinkNonBump, "PartialLinkNonBump"));
+    sendableChooser.setDefaultOption("Score, Leave, & Balance", drive.buildAuto(autonEvents, "ScoreLeaveBalance"));
+    sendableChooser.addOption("Partial Link Bump", drive.buildAuto(autonEvents, "PartialLinkBump"));
+    sendableChooser.addOption("Partial Link Non-Bump", drive.buildAuto(autonEvents, "PartialLinkNonBump"));
+    sendableChooser.addOption("Small Straight", drive.buildAuto(autonEvents, "SmallStraight"));
     SmartDashboard.putData(sendableChooser);
   }
 }
