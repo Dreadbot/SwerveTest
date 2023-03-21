@@ -1,7 +1,15 @@
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+import java.util.List;
+
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -13,19 +21,22 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.misc.DreadbotMotor;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Drivetrain {
+public class Drivetrain extends SubsystemBase {
     //Double check locations
     //What is location in comparasion to front of bot 
     //Example x and y's seem to be swapped?
     private final Translation2d frontLeftLocation = new Translation2d(SwerveConstants.MODULE_OFFSET, SwerveConstants.MODULE_OFFSET);
-    private final Translation2d frontRightLocation = new Translation2d(-SwerveConstants.MODULE_OFFSET, SwerveConstants.MODULE_OFFSET);
-    private final Translation2d backLeftLocation = new Translation2d(SwerveConstants.MODULE_OFFSET, -SwerveConstants.MODULE_OFFSET);
+    private final Translation2d frontRightLocation = new Translation2d(SwerveConstants.MODULE_OFFSET, -SwerveConstants.MODULE_OFFSET);
+    private final Translation2d backLeftLocation = new Translation2d(-SwerveConstants.MODULE_OFFSET, SwerveConstants.MODULE_OFFSET);
     private final Translation2d backRightLocation = new Translation2d(-SwerveConstants.MODULE_OFFSET, -SwerveConstants.MODULE_OFFSET);
 
     private SwerveModule frontLeftModule;
@@ -71,8 +82,8 @@ public class Drivetrain {
 
         kinematics = new SwerveDriveKinematics(
             frontLeftLocation,
-            backLeftLocation,
             frontRightLocation,
+            backLeftLocation,
             backRightLocation
         );
 
@@ -104,6 +115,10 @@ public class Drivetrain {
         backRightModule.putValuesToSmartDashboard("back right");
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.ATTAINABLE_MAX_SPEED);
+        setDesiredState(swerveModuleStates);
+    }
+
+    public void setDesiredState(SwerveModuleState[] swerveModuleStates) {
         frontLeftModule.setDesiredState(swerveModuleStates[0]);
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
@@ -122,6 +137,19 @@ public class Drivetrain {
         );
     }
 
+    public void resetOdometry(Pose2d pose) {
+        odometry.resetPosition(
+            new Rotation2d(Units.degreesToRadians(gyro.getYaw())),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            },
+            pose
+        );
+    }
+
     public Pose2d getPosition(){
         return odometry.getPoseMeters();
     }
@@ -134,5 +162,26 @@ public class Drivetrain {
         frontRightModule.setDesiredState(swerveModuleStates[1]);
         backLeftModule.setDesiredState(swerveModuleStates[2]);
         backRightModule.setDesiredState(swerveModuleStates[3]);
+    }
+
+    public Command buildAuto(HashMap<String, Command> eventMap, String pathName) {
+        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
+            pathName,
+            new PathConstraints(4.0, 3.0)
+        );
+
+        SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+            this::getPosition,
+            this::resetOdometry,
+            kinematics,
+            new PIDConstants(1.0, 0.0, 0.0),
+            new PIDConstants(1.0, 0.0, 0.0),
+            this::setDesiredState,
+            eventMap,
+            true,
+            this
+        );
+
+        return autoBuilder.fullAuto(pathGroup);
     }
 }

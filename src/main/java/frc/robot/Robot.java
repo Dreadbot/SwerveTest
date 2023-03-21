@@ -5,9 +5,14 @@
 package frc.robot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -26,6 +31,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -50,16 +56,23 @@ public class Robot extends TimedRobot {
   DreadbotController controller = new DreadbotController(0);
 
   HolonomicDriveController holonomicDriveController =
-     new HolonomicDriveController(
+    new HolonomicDriveController(
       new PIDController(.5, 0, 0),
       new PIDController(.5, 0, 0),
       new ProfiledPIDController(1, 0, 0,
-        new TrapezoidProfile.Constraints(6.28, 3.14)));
+      new TrapezoidProfile.Constraints(6.28, 3.14))
+    );
 
   Trajectory trajectory;
 
   State goal;
 
+  boolean runningTestAuto = true;
+
+  private final SendableChooser<Command> sendableChooser = new SendableChooser<>();
+  private final HashMap<String, Command> scoreLeaveBalance = new HashMap<>();
+  private final HashMap<String, Command> partialLinkBump = new HashMap<>();
+  private final HashMap<String, Command> partialLinkNonBump = new HashMap<>();
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -69,14 +82,14 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
     SmartDashboard.putNumber("Drive P", 0);
     SmartDashboard.putNumber("Drive I", 0);
     SmartDashboard.putNumber("Drive D", 0);
     SmartDashboard.putNumber("Drive FF", 0);
-
-    
-
-
+    SmartDashboard.putBoolean("RunTestAuton", true);
+    SmartDashboard.putBoolean("RunAutonPath", false);
+    initAutonChooser();
   }
 
   /**
@@ -105,20 +118,27 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = sendableChooser.getSelected();
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
+    if (SmartDashboard.getBoolean("RunAutonPath", false)) {
       m_autonomousCommand.schedule();
+      return;
     }
-    generateTrajectory();
-    goal = trajectory.sample(trajectory.getTotalTimeSeconds());
-    
+
+    runningTestAuto = SmartDashboard.getBoolean("RunTestAuton", true);
+    if (runningTestAuto) {
+      generateTrajectory();
+      goal = trajectory.sample(trajectory.getTotalTimeSeconds());
+    }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    if (!runningTestAuto)
+      return;
+
     ChassisSpeeds trajectorySpeeds = holonomicDriveController.calculate(
       drive.getPosition(), goal.poseMeters, kDefaultPeriod, Rotation2d.fromDegrees(0));
 
@@ -178,9 +198,17 @@ public class Robot extends TimedRobot {
     config.setReversed(true);
 
     trajectory = TrajectoryGenerator.generateTrajectory(
-        sideStart,
-        interiorWaypoints,
-        crossScale,
-        config);
+      sideStart,
+      interiorWaypoints,
+      crossScale,
+      config
+    );
+  }
+
+  private void initAutonChooser() {
+    sendableChooser.setDefaultOption("Score, Leave, & Balance", drive.buildAuto(scoreLeaveBalance, "ScoreLeaveBalance"));
+    sendableChooser.addOption("Partial Link Bump", drive.buildAuto(partialLinkBump, "PartialLinkBump"));
+    sendableChooser.addOption("Partial Link Non-Bump", drive.buildAuto(partialLinkNonBump, "PartialLinkNonBump"));
+    SmartDashboard.putData(sendableChooser);
   }
 }
