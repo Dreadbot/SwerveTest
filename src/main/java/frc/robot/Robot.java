@@ -73,6 +73,10 @@ public class Robot extends TimedRobot {
 
   private final SendableChooser<Command> sendableChooser = new SendableChooser<>();
   private final HashMap<String, Command> autonEvents = new HashMap<>();
+
+  double xSpeed;
+  double ySpeed;
+  double rotSpeed;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -146,12 +150,26 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.drive(
-      -DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05) * 0.4,
-      -DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05) * 0.4,
-      -DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05) * 0.4,
-      true
-    );
+    xSpeed = -DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05) * 0.4;
+    ySpeed = -DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05) * 0.4;
+    rotSpeed = -DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05);
+
+    if(controller.isDpadUpPressed())
+      drive.drive( 0, .4, 0, true);
+    else if(controller.isDpadDownPressed())
+      drive.drive( 0, -.4, 0, true);
+    else if(controller.isDpadRightPressed())
+      drive.drive(-.4, 0, 0, true);
+    else if(controller.isDpadLeftPressed())
+      drive.drive(.4, 0, 0, true);
+    else {
+      drive.drive(
+        xSpeed,
+        ySpeed,
+        rotSpeed,
+        true
+      );
+    }
   }
   @Override
   public void testInit() {

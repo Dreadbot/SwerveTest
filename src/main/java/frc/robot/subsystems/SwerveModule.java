@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.util.misc.BufferedPrint;
 import frc.robot.util.misc.DreadbotMotor;
 
 public class SwerveModule {
@@ -21,6 +22,9 @@ public class SwerveModule {
     private double canCoderOffset;
     private SparkMaxPIDController drivePIDController;
     private PIDController turningPIDController = new PIDController(2, 0, 0);
+    private String name;
+    private BufferedPrint bufferedPrint = new BufferedPrint();
+    private BufferedPrint bufferedPrint2 = new BufferedPrint();
     
     public SwerveModule(DreadbotMotor driveMotor, DreadbotMotor turnMotor, CANCoder turningCanCoder, double canCoderOffset) {
         this.driveMotor = driveMotor;
@@ -69,7 +73,16 @@ public class SwerveModule {
     }
 
     public void putValuesToSmartDashboard(String name) {
-        SmartDashboard.putNumber(name +" Can Coder", turningCanCoder.getAbsolutePosition());
+        SmartDashboard.putNumber(name + " Can Coder with offset", turningCanCoder.getAbsolutePosition());
+        SmartDashboard.putNumber(name + " Can Coder", turningCanCoder.getAbsolutePosition() - canCoderOffset);
+
+        // double newCanCoderOffset = SmartDashboard.getNumber(name + " Can Coder", canCoderOffset);
+        // if(newCanCoderOffset != canCoderOffset){
+        //     bufferedPrint.bufferedPrint("Offset: " + canCoderOffset);
+        //     bufferedPrint2.bufferedPrint("New Offset: " + newCanCoderOffset);
+        //     canCoderOffset = newCanCoderOffset;
+        //     turningCanCoder.configMagnetOffset(-canCoderOffset);
+        // }
     }
 
     public DreadbotMotor getDriveMotor() {
