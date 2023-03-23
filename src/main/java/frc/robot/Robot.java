@@ -150,6 +150,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    SmartDashboard.putNumber("Gyro Position", drive.getYaw());
     xSpeed = -DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05) * 0.4;
     ySpeed = -DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05) * 0.4;
     rotSpeed = -DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05);

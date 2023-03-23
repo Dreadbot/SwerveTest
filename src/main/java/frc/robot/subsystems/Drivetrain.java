@@ -44,7 +44,7 @@ public class Drivetrain extends SubsystemBase {
     private SwerveModule backLeftModule;
     private SwerveModule backRightModule;
 
-    private AHRS gyro = new AHRS(SerialPort.Port.kUSB);
+    private AHRS gyro = new AHRS(SerialPort.Port.kMXP);
 
     private SwerveDriveKinematics kinematics;
 
@@ -79,7 +79,6 @@ public class Drivetrain extends SubsystemBase {
         );
 
         gyro.reset();
-
         kinematics = new SwerveDriveKinematics(
             frontLeftLocation,
             frontRightLocation,
@@ -156,6 +155,12 @@ public class Drivetrain extends SubsystemBase {
         return odometry.getPoseMeters();
     }
 
+    public Rotation2d getGyroPosition() {
+        return gyro.getRotation2d();
+    }
+    public double getYaw() {
+        return gyro.getYaw();
+    }
     public void followSpeeds(ChassisSpeeds speeds){
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
 
