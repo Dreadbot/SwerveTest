@@ -105,10 +105,11 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative){
-        SwerveModuleState[] swerveModuleStates = 
-            kinematics.toSwerveModuleStates(
-                new ChassisSpeeds(xSpeed, ySpeed, rot)
-            );
+        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(
+            fieldRelative ? 
+            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
+            : new ChassisSpeeds(xSpeed, ySpeed, rot)
+        );
         frontLeftModule.putValuesToSmartDashboard("front left");
         frontRightModule.putValuesToSmartDashboard("front right");
         backLeftModule.putValuesToSmartDashboard("back left");
@@ -139,7 +140,7 @@ public class Drivetrain extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         odometry.resetPosition(
-            new Rotation2d(Units.degreesToRadians(gyro.getYaw())),
+            gyro.getRotation2d(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
