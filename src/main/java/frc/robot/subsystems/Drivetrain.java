@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -152,7 +153,12 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Pose2d getPosition(){
-        return odometry.getPoseMeters();
+        return odometry.update(getGyroPosition(), new SwerveModulePosition[] {
+            frontLeftModule.getPosition(),
+            frontRightModule.getPosition(),
+            backLeftModule.getPosition(),
+            backRightModule.getPosition()
+        });
     }
 
     public Rotation2d getGyroPosition() {
@@ -181,14 +187,13 @@ public class Drivetrain extends SubsystemBase {
             this::getPosition,
             this::resetOdometry,
             kinematics,
-            new PIDConstants(0.0, 0.0, 0.0),
-            new PIDConstants(0.0, 0.0, 0.0),
+            new PIDConstants(.5, 0.0, 0.0),
+            new PIDConstants(.5, 0.0, 0.0),
             this::setDesiredState,
             eventMap,
             true,
             this
         );
-
         return autoBuilder.fullAuto(pathGroup);
     }
 }

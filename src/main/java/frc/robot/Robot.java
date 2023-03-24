@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.DreadbotController;
 import frc.robot.util.math.DreadbotMath;
+import frc.robot.util.misc.BufferedPrint;
 import frc.robot.util.misc.DreadbotMotor;
 import frc.robot.subsystems.Drivetrain;
 
@@ -54,6 +55,8 @@ public class Robot extends TimedRobot {
   private Drivetrain drive = new Drivetrain();
 
   DreadbotController controller = new DreadbotController(0);
+
+  BufferedPrint bufferedPrint = new BufferedPrint();
 
   HolonomicDriveController holonomicDriveController =
     new HolonomicDriveController(
@@ -133,7 +136,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    
+    bufferedPrint.bufferedPrint(drive.getPosition().toString(), 20);
   }
 
   @Override
@@ -200,7 +203,7 @@ public class Robot extends TimedRobot {
     interiorWaypoints.add(new Translation2d(0, 1));
     interiorWaypoints.add(new Translation2d(0, 2));
 
-    TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(2));
+    TrajectoryConfig config = new TrajectoryConfig(6, Units.feetToMeters(2));
     config.setReversed(true);
 
     trajectory = TrajectoryGenerator.generateTrajectory(
