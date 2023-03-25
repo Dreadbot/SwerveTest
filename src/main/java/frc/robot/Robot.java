@@ -219,6 +219,7 @@ public class Robot extends TimedRobot {
     sendableChooser.addOption("Partial Link Bump", drive.buildAuto(autonEvents, "PartialLinkBump"));
     sendableChooser.addOption("Partial Link Non-Bump", drive.buildAuto(autonEvents, "PartialLinkNonBump"));
     sendableChooser.addOption("Small Straight", drive.buildAuto(autonEvents, "SmallStraight"));
+    sendableChooser.addOption("Test Straight", drive.buildAuto(autonEvents, "TestStraight"));
     SmartDashboard.putData(sendableChooser);
   }
 }
