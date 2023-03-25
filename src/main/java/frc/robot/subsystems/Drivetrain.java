@@ -24,6 +24,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.util.misc.DreadbotMotor;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
@@ -161,20 +162,20 @@ public class Drivetrain extends SubsystemBase {
     public Command buildAuto(HashMap<String, Command> eventMap, String pathName) {
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
             pathName,
-            new PathConstraints(1.0, 0.1)
+            new PathConstraints(2.0, 0.5)
         );
 
         SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
             this::getPosition,
             this::resetOdometry,
             kinematics,
-            new PIDConstants(.5, 0.0, 0.0),
-            new PIDConstants(.5, 0.0, 0.0),
+            new PIDConstants(2.5, 0.0, 0.0),
+            new PIDConstants(2, 0.0, 0.0),
             this::setDesiredState,
             eventMap,
             true,
             this
         );
-        return autoBuilder.fullAuto(pathGroup);
+        return autoBuilder.fullAuto(pathGroup).andThen(new InstantCommand());
     }
 }
