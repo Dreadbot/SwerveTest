@@ -62,10 +62,6 @@ public class SwerveModule {
 
     public void setDesiredState(SwerveModuleState desiredState) {
         SwerveModuleState optimizedState = SwerveModuleState.optimize(desiredState, new Rotation2d(Units.degreesToRadians(turningCanCoder.getAbsolutePosition())));
-        // driveMotor.setP(SmartDashboard.getNumber("Drive P", 0));
-        // driveMotor.setI(SmartDashboard.getNumber("Drive I", 0));
-        // driveMotor.setD(SmartDashboard.getNumber("Drive D", 0));
-        // driveMotor.setFF(SmartDashboard.getNumber("Drive FF", 0));
 
         double turnOutput = turningPIDController.calculate(Units.degreesToRadians(turningCanCoder.getAbsolutePosition()), optimizedState.angle.getRadians());
         drivePIDController.setReference(optimizedState.speedMetersPerSecond, ControlType.kVelocity);
@@ -75,14 +71,6 @@ public class SwerveModule {
     public void putValuesToSmartDashboard(String name) {
         SmartDashboard.putNumber(name + " Can Coder with offset", turningCanCoder.getAbsolutePosition());
         SmartDashboard.putNumber(name + " Can Coder", turningCanCoder.getAbsolutePosition() - canCoderOffset);
-
-        // double newCanCoderOffset = SmartDashboard.getNumber(name + " Can Coder", canCoderOffset);
-        // if(newCanCoderOffset != canCoderOffset){
-        //     bufferedPrint.bufferedPrint("Offset: " + canCoderOffset);
-        //     bufferedPrint2.bufferedPrint("New Offset: " + newCanCoderOffset);
-        //     canCoderOffset = newCanCoderOffset;
-        //     turningCanCoder.configMagnetOffset(-canCoderOffset);
-        // }
     }
 
     public DreadbotMotor getDriveMotor() {

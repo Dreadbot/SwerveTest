@@ -3,33 +3,10 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.Trajectory.State;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.DreadbotController;
 import frc.robot.util.math.DreadbotMath;
 import frc.robot.util.misc.BufferedPrint;
-import frc.robot.util.misc.DreadbotMotor;
 import frc.robot.subsystems.Drivetrain;
 
 /**
@@ -57,16 +33,6 @@ public class Robot extends TimedRobot {
   DreadbotController controller = new DreadbotController(0);
 
   BufferedPrint bufferedPrint = new BufferedPrint();
-
-  HolonomicDriveController holonomicDriveController =
-    new HolonomicDriveController(
-      new PIDController(.5, 0, 0),
-      new PIDController(.5, 0, 0),
-      new ProfiledPIDController(
-        1, 0, 0,
-        new TrapezoidProfile.Constraints(6.28, 3.14)
-      )
-    );
 
   Trajectory trajectory;
 
@@ -153,7 +119,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putNumber("Gyro Position", drive.getYaw());
     xSpeed = -DreadbotMath.applyDeadbandToValue(controller.getYAxis(), 0.05) * 0.4;
     ySpeed = -DreadbotMath.applyDeadbandToValue(controller.getXAxis(), 0.05) * 0.4;
     rotSpeed = -DreadbotMath.applyDeadbandToValue(controller.getZAxis(), 0.05);
@@ -192,27 +157,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
-
-  //Copied from WPI
-  public void generateTrajectory() {
-    // 2018 cross scale auto waypoints.
-    var sideStart = new Pose2d( 0, 0, new Rotation2d(0));
-    var crossScale = new Pose2d(0, 3,new Rotation2d(0));
-
-    var interiorWaypoints = new ArrayList<Translation2d>();
-    interiorWaypoints.add(new Translation2d(0, 1));
-    interiorWaypoints.add(new Translation2d(0, 2));
-
-    TrajectoryConfig config = new TrajectoryConfig(6, Units.feetToMeters(2));
-    config.setReversed(true);
-
-    trajectory = TrajectoryGenerator.generateTrajectory(
-      sideStart,
-      interiorWaypoints,
-      crossScale,
-      config
-    );
-  }
 
   private void initAutonChooser() {
     sendableChooser.setDefaultOption("Score, Leave, & Balance", drive.buildAuto(autonEvents, "ScoreLeaveBalance"));
